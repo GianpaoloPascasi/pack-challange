@@ -1,0 +1,21 @@
+import { Pool } from "pg";
+import { Kysely, PostgresDialect } from "kysely";
+import { File } from "../files/interfaces/file.interface";
+
+const dialect = new PostgresDialect({
+  pool: new Pool({
+    database: process.env.DATABASE_NAME,
+    host: process.env.DATABASE_HOST,
+    user: process.env.DATABASE_USER,
+    port: process.env.DATABASE_PORT ?? 5434,
+    max: process.env.DATABASE_POOL ?? 10,
+  }),
+});
+
+// Database interface is passed to Kysely's constructor, and from now on, Kysely
+// knows your database structure.
+// Dialect is passed to Kysely's constructor, and from now on, Kysely knows how
+// to communicate with your database.
+export const db = new Kysely<{ files: File }>({
+  dialect,
+});

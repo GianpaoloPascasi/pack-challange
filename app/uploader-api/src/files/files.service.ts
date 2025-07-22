@@ -1,5 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import fs from "fs/promises";
+import * as fs from "fs/promises";
+import { InvalidFileError } from "./invalid-file-error";
+import { db } from "../utils/db";
+import { CreateFileDTO } from "./dto/create-file.dto";
+import { File } from "./interfaces/file.interface";
 
 const JPEG_JPG_SIGNATURES = [
   [0xff, 0xd8, 0xff, 0xdb],
@@ -8,7 +12,43 @@ const JPEG_JPG_SIGNATURES = [
 ];
 @Injectable()
 export class FilesService {
+  async uploadAndCreateFile(file: Express.Multer.File, data: CreateFileDTO) {
+    const fileUrl = await this.uploadFile(file);
+    return await this.createFile(data, fileUrl, file.mimetype);
+  }
+
+  async createFile(data: CreateFileDTO, fileUrl: string, mimeType: string) {
+    const res = await db
+      .insertInto("files")
+      .values({
+        category: data.category,
+        description: data.description,
+        file: fileUrl,
+        language: data.language,
+        mimeType: mimeType,
+        title: data.title,
+        provider: data.provider,
+        roles: data.roles,
+      })
+      .returning(["id"])
+      .executeTakeFirstOrThrow();
+    return {
+      category: data.category,
+      description: data.description,
+      file: fileUrl,
+      language: data.language,
+      mimeType: mimeType,
+      title: data.title,
+      provider: data.provider,
+      roles: data.roles,
+      id: res.id as unknown,
+    } as File;
+  }
+
   async uploadFile(file: Express.Multer.File) {
+    if (!this.validateUploadedFile(file)) {
+      throw new InvalidFileError();
+    }
     const fileName = `${Date.now()}.${file.mimetype.split("/").at(-1)}`;
     await fs.writeFile(fileName, file.buffer);
     return fileName;
@@ -65,4 +105,23 @@ export class FilesService {
 
     return true;
   }
+
+  async getAllFiles(page: number, itemsPerPage: number) {
+    const res = await db
+      .selectFrom("files")
+      .selectAll()
+      .limit(itemsPerPage)
+      .offset(page * itemsPerPage)
+      .execute();
+    return res;
+  }
+  async getFileById(id: number) {
+    const res = await db
+      .selectFrom("files")
+      .selectAll()
+      .where("id", "=", id)
+      .execute();
+    return res;
+  }
+  async getStats() {}
 }

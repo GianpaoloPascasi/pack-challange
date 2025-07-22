@@ -21,18 +21,13 @@ create table files(
      language INTEGER REFERENCES languages(id) not null,
      provider INTEGER REFERENCES providers(id) not null,
      file varchar(2048) not null,
-     mimeType varchar(128) not null
+     mimeType varchar(128) not null,
+     roles INTEGER[]
 );
 
 create table roles(
     id SERIAL PRIMARY KEY,
     name VARCHAR(50),
-);
-
-create table files_roles(
-    id SERIAL PRIMARY KEY,
-    file_id INTEGER REFERENCES files(id) not null,
-    role_id INTEGER REFERENCES roles(id) not null,
 );
 
 create table users(

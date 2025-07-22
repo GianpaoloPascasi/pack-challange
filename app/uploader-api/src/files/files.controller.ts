@@ -6,27 +6,36 @@ import {
   Post,
   UploadedFile,
   UseInterceptors,
-} from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { CreateFileDTO } from './interfaces/file.interface';
+} from "@nestjs/common";
+import { FileInterceptor } from "@nestjs/platform-express";
+import { CreateFileDTO } from "./dto/create-file.dto";
+import { FilesService } from "./files.service";
 
-@Controller('files')
+@Controller("files")
 export class FilesController {
-  @Post('upload')
-  @UseInterceptors(FileInterceptor('file'))
-  upload(
+  constructor(private filesService: FilesService) {}
+
+  @Post("upload")
+  @UseInterceptors(FileInterceptor("file"))
+  async upload(
     @UploadedFile() file: Express.Multer.File,
     @Body() data: CreateFileDTO,
-  ) {}
-
-  @Get()
-  getAllFiles() {}
-
-  @Get('file/:id')
-  getFileById(@Param('id') id: number) {
-    return id;
+  ) {
+    return await this.filesService.uploadAndCreateFile(file, data);
   }
 
-  @Get('stats')
-  getStats() {}
+  @Get()
+  async getAllFiles(page: number, itemsPerPage: number) {
+    return await this.filesService.getAllFiles(page, itemsPerPage);
+  }
+
+  @Get("file/:id")
+  async getFileById(@Param("id") id: number) {
+    return await this.filesService.getFileById(id);
+  }
+
+  @Get("stats")
+  async getStats() {
+    return await this.filesService.getStats();
+  }
 }
