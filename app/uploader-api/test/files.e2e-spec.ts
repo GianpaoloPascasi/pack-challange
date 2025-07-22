@@ -1,10 +1,10 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication } from "@nestjs/common";
 import { App } from "supertest/types";
-import { createMulterFile } from "../src/utils/create-multer-file";
+import * as request from "supertest";
 import { FilesModule } from "../src/files/files.module";
-import { FilesService } from "../src/files/files.service";
 import { db } from "../src/utils/db";
+import { CreateFileDTO } from "../src/files/dto/create-file.dto";
 
 describe("AppController (e2e)", () => {
   let app: INestApplication<App>;
@@ -14,52 +14,59 @@ describe("AppController (e2e)", () => {
       imports: [FilesModule],
     }).compile();
 
-    db.insertInto("files").values([{
-        title: ,
-        description: ,
-        category: ,
-        language: ,
-        provider: ,
-        roles: ,
-        file: ,
-        mimeType: ,
-    }, {}]);
-
     app = moduleFixture.createNestApplication();
     await app.init();
   });
 
-  //   it("should validate a jpg pristine file", async () => {
-  //     const file = await createMulterFile(
-  //       `${__dirname}../../test_files/clippy.jpg`,
-  //     );
-  //     console.log(file);
-  //     const res = service.validateUploadedFile(file);
-  //     expect(res).toBe(true);
-
-  //     return request(app.getHttpServer()).post("/upload")..expect(200);
-  //   });
-
-  it("should validate a jpg pristine file", async () => {
-    const file = await createMulterFile(
-      `${__dirname}../../test_files/clippy.jpg`,
-    );
-    const res = app.get<FilesService>(FilesService).validateUploadedFile(file);
-    expect(res).toBe(true);
+  it("should upload file", async () => {
+    const res = await request(app.getHttpServer())
+      .post("/")
+      .set("Content-Type", "multipart/form-data")
+      .attach("file", "./test_files/clippy.jpg")
+      .field("data", JSON.stringify({} as CreateFileDTO));
+    expect(res.status).toBe(200);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    expect(res.body.id).toBeGreaterThan(0);
   });
 
-  //   it("should not validate a pdf with jpg signature", async () => {
-  //     const file = await createMulterFile(
-  //       `${__dirname}../../test_files/clippy.pdf`,
-  //     );
-  //     console.log(file, __dirname);
-  //     const res = service.validateUploadedFile(file);
-  //     expect(res).toBe(true);
-  //   });
+  it("should not upload a file with invalid signature", async () => {
+    const res = await request(app.getHttpServer())
+      .post("/")
+      .set("Content-Type", "multipart/form-data")
+      .attach("file", "./test_files/clippy.pdf") //this is a jpg with a pdf extension, same as uploading an exe with a pdf extension
+      .field("data", JSON.stringify({} as CreateFileDTO));
+    expect(res.status).toBe(200);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    expect(res.body.id).toBeGreaterThan(0);
+  });
 
-  //   it("should upload file", () => {
-  //     const f = {} as Express.Multer.File;
-  //     const req = service.uploadFile(f);
-  //     void expect(req).resolves.toBeTruthy();
-  //   });
+  it("should retrieve all files", async () => {
+    await db.deleteFrom("files").execute();
+
+    await db
+      .insertInto("files")
+      .values([
+        {
+          title: "",
+          description: "",
+          category: 1,
+          language: 1,
+          provider: 1,
+          roles: [1],
+          file: "aa-png",
+          mimeType: "image/png",
+        },
+        {
+          title: "",
+          description: "",
+          category: 1,
+          language: 1,
+          provider: 1,
+          roles: [1],
+          file: "aa-png",
+          mimeType: "image/png",
+        },
+      ])
+      .execute();
+  });
 });
