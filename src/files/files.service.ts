@@ -12,12 +12,21 @@ const JPEG_JPG_SIGNATURES = [
 ];
 @Injectable()
 export class FilesService {
-  async uploadAndCreateFile(file: Express.Multer.File, data: CreateFileDTO) {
+  async uploadAndCreateFile(
+    file: Express.Multer.File,
+    data: CreateFileDTO,
+    userId: number,
+  ): Promise<CreateFileDTO> {
     const fileUrl = await this.uploadFile(file);
-    return await this.createFile(data, fileUrl, file.mimetype);
+    return await this.createFile(data, fileUrl, file.mimetype, userId);
   }
 
-  async createFile(data: CreateFileDTO, fileUrl: string, mimeType: string) {
+  async createFile(
+    data: CreateFileDTO,
+    fileUrl: string,
+    mimetype: string,
+    userId: number,
+  ): Promise<CreateFileDTO> {
     const res = await db
       .insertInto("files")
       .values({
@@ -25,24 +34,31 @@ export class FilesService {
         description: data.description,
         file: fileUrl,
         language: data.language,
-        mimeType: mimeType,
+        mimetype: mimetype,
         title: data.title,
         provider: data.provider,
-        roles: data.roles,
+        uploaded_by: userId,
       })
       .returning(["id"])
       .executeTakeFirstOrThrow();
+
+    await db
+      .insertInto("files_roles")
+      .values(data.roles.map((e) => ({ file_id: res.id, role_id: e })))
+      .execute();
+
     return {
       category: data.category,
       description: data.description,
       file: fileUrl,
       language: data.language,
-      mimeType: mimeType,
+      mimetype: mimetype,
       title: data.title,
       provider: data.provider,
+      id: res.id,
       roles: data.roles,
-      id: res.id as unknown,
-    } as File;
+      uploaded_by: userId,
+    };
   }
 
   async uploadFile(file: Express.Multer.File) {
@@ -77,9 +93,9 @@ export class FilesService {
       return false;
     }
 
-    const mimeType = allowedMimeTypes.find((e) => e.mimetype == file.mimetype);
+    const mimetype = allowedMimeTypes.find((e) => e.mimetype == file.mimetype);
 
-    if (!mimeType) {
+    if (!mimetype) {
       return false;
     }
     const maxSize = 4000 * 1024 * 1024; // 4GB
@@ -88,7 +104,7 @@ export class FilesService {
     }
 
     let validSignature = false;
-    for (const signature of mimeType.signatures) {
+    for (const signature of mimetype.signatures) {
       const expectedSignature = Buffer.from(signature); // "%PDF"
       const actualSignature = file.buffer?.subarray(
         0,

@@ -5,8 +5,18 @@ import * as request from "supertest";
 import { FilesModule } from "../src/files/files.module";
 import { db } from "../src/utils/db";
 import { CreateFileDTO } from "../src/files/dto/create-file.dto";
+import { sql } from "kysely";
 
 describe("AppController (e2e)", () => {
+  // if (!process.env.DATABASE_HOST) {
+  //   process.env.DATABASE_HOST = "localhost";
+  //   process.env.DATABASE_NAME = "files";
+  //   process.env.DATABASE_USER = "user";
+  //   process.env.DATABASE_PASSWORD = "password";
+  //   process.env.DATABASE_PORT = 5432;
+  //   process.env.DATABASE_POOL = 10;
+  // }
+
   let app: INestApplication<App>;
 
   beforeEach(async () => {
@@ -16,14 +26,26 @@ describe("AppController (e2e)", () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
+    await sql`truncate table files restart identity cascade;`.execute(db);
   });
 
   it("should upload file", async () => {
     const res = await request(app.getHttpServer())
-      .post("/")
+      .post("/files/upload")
       .set("Content-Type", "multipart/form-data")
       .attach("file", "./test_files/clippy.jpg")
-      .field("data", JSON.stringify({} as CreateFileDTO));
+      .field(
+        "data",
+        JSON.stringify({
+          category: 1,
+          description: "Test",
+          language: 1,
+          provider: 1,
+          roles: [1, 2],
+          title: "Test",
+          uploaded_by: 1,
+        } as CreateFileDTO),
+      );
     expect(res.status).toBe(200);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     expect(res.body.id).toBeGreaterThan(0);
@@ -31,18 +53,29 @@ describe("AppController (e2e)", () => {
 
   it("should not upload a file with invalid signature", async () => {
     const res = await request(app.getHttpServer())
-      .post("/")
+      .post("/files/upload")
       .set("Content-Type", "multipart/form-data")
       .attach("file", "./test_files/clippy.pdf") //this is a jpg with a pdf extension, same as uploading an exe with a pdf extension
-      .field("data", JSON.stringify({} as CreateFileDTO));
+      .field(
+        "data",
+        JSON.stringify(
+          JSON.stringify({
+            category: 1,
+            description: "Test",
+            language: 1,
+            provider: 1,
+            roles: [1, 2],
+            title: "Test",
+            uploaded_by: 1,
+          } as CreateFileDTO),
+        ),
+      );
     expect(res.status).toBe(200);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     expect(res.body.id).toBeGreaterThan(0);
   });
 
   it("should retrieve all files", async () => {
-    await db.deleteFrom("files").execute();
-
     await db
       .insertInto("files")
       .values([
@@ -52,9 +85,9 @@ describe("AppController (e2e)", () => {
           category: 1,
           language: 1,
           provider: 1,
-          roles: [1],
           file: "aa-png",
-          mimeType: "image/png",
+          mimetype: "image/png",
+          uploaded_by: 1,
         },
         {
           title: "",
@@ -62,11 +95,42 @@ describe("AppController (e2e)", () => {
           category: 1,
           language: 1,
           provider: 1,
-          roles: [1],
           file: "aa-png",
-          mimeType: "image/png",
+          mimetype: "image/png",
+          uploaded_by: 1,
         },
       ])
       .execute();
+
+    await db
+      .insertInto("files_roles")
+      .values([
+        {
+          file_id: 1,
+          role_id: 1,
+        },
+        {
+          file_id: 1,
+          role_id: 2,
+        },
+        {
+          file_id: 2,
+          role_id: 1,
+        },
+        {
+          file_id: 2,
+          role_id: 2,
+        },
+      ])
+      .execute();
+
+    return request(app.getHttpServer())
+      .get("/files")
+      .query("page=1")
+      .query("itemsPerPage=10")
+      .send()
+      .expect(200)
+      .expect((res) => (res.body as CreateFileDTO[]).length == 2)
+      .expect((res) => (res.body as CreateFileDTO[])[0].roles.length == 2);
   });
 });

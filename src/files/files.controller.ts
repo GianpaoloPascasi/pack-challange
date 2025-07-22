@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   Post,
+  Query,
   UploadedFile,
   UseInterceptors,
 } from "@nestjs/common";
@@ -21,11 +22,14 @@ export class FilesController {
     @UploadedFile() file: Express.Multer.File,
     @Body() data: CreateFileDTO,
   ) {
-    return await this.filesService.uploadAndCreateFile(file, data);
+    return await this.filesService.uploadAndCreateFile(file, data, 1);
   }
 
   @Get()
-  async getAllFiles(page: number, itemsPerPage: number) {
+  async getAllFiles(
+    @Query("page") page: number,
+    @Query("itemsPerPage") itemsPerPage: number,
+  ) {
     return await this.filesService.getAllFiles(page, itemsPerPage);
   }
 

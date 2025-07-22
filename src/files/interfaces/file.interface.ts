@@ -7,7 +7,7 @@ export interface File {
   category: number;
   language: number;
   provider: number;
-  roles: number[];
   file: string;
-  mimeType: string;
+  mimetype: string;
+  uploaded_by: number;
 }
