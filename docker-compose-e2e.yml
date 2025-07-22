@@ -1,0 +1,6 @@
+include:
+  - containers/db.yml
+  - containers/web-e2e.yml
+
+# volumes:
+#   pgdata: /var/lib/postgresql/data
