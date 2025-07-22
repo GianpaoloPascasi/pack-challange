@@ -21,6 +21,7 @@ create table files(
      language INTEGER REFERENCES languages(id) not null,
      provider INTEGER REFERENCES providers(id) not null,
      file varchar(2048) not null,
+     mimeType varchar(128) not null
 );
 
 create table roles(
@@ -33,3 +34,9 @@ create table files_roles(
     file_id INTEGER REFERENCES files(id) not null,
     role_id INTEGER REFERENCES roles(id) not null,
 );
+
+create table users(
+    id SERIAL PRIMARY KEY,
+    username varchar(255) not null,
+    password varchar()
+)
