@@ -3,6 +3,7 @@ import { Kysely, PostgresDialect } from "kysely";
 import { File } from "../files/interfaces/file.interface";
 import { FileRoles } from "../files/interfaces/file_roles.interface";
 import * as dotenv from "dotenv";
+import { Resource } from "sst";
 
 if (process.env.NODE_ENV) {
   dotenv.config({
@@ -14,7 +15,7 @@ if (process.env.NODE_ENV) {
 
 const dialect = new PostgresDialect({
   pool: new Pool({
-    database: process.env.DATABASE_NAME,
+    database: Resource. ?? process.env.DATABASE_NAME,
     host: process.env.DATABASE_HOST,
     user: process.env.DATABASE_USER,
     password: process.env.DATABASE_PASSWORD,
