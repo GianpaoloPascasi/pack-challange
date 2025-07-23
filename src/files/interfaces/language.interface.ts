@@ -1,6 +1,6 @@
 import { Generated } from "kysely";
 
-export interface Category {
+export interface Language {
   id: Generated<number> | number;
   name: string;
 }

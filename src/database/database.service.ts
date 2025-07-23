@@ -4,10 +4,19 @@ import { FileRoles } from "../files/interfaces/file_roles.interface";
 import { Pool } from "pg";
 import { Resource } from "sst";
 import { File } from "../files/interfaces/file.interface";
+import { Category } from "../files/interfaces/category.interface";
+import { Language } from "../files/interfaces/language.interface";
+
+interface DatabaseTables {
+  files: File;
+  files_roles: FileRoles;
+  categories: Category;
+  languages: Language;
+}
 
 @Injectable()
 export class DatabaseService {
-  private db: Kysely<{ files: File; files_roles: FileRoles }>;
+  private db: Kysely<DatabaseTables>;
 
   constructor() {
     const dialect = new PostgresDialect({
@@ -25,7 +34,7 @@ export class DatabaseService {
     // knows your database structure.
     // Dialect is passed to Kysely's constructor, and from now on, Kysely knows how
     // to communicate with your database.
-    this.db = new Kysely<{ files: File; files_roles: FileRoles }>({
+    this.db = new Kysely<DatabaseTables>({
       dialect,
     });
   }

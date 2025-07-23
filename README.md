@@ -4,9 +4,11 @@ NestJS (easier for boilerplate code, tests ecc), Postgres and Kysely.
 # Tests to watch 
 I did some exaple tests in app\uploader-api\test\files.e2e-spec.ts (E2E) and app\uploader-api\src\files\files.service.spec.ts (Unit test).
 
-# What I hadn't time to do
+# What I hadn't time to do and other ideas
 - I did the best effort to give an example of bit wise file validation but I could add other file types and signatures.
-- Files could be scanned by an antivirus service (like virustotal api or something)
+- Files could be scanned by an antivirus service (like virustotal api or similar).
+- About multitenantcy this service could be replicated (both apis and database instances) for every provider (Pack or other companies) to avoid overloading one service with all the multimedia.
+- To handle heavy and frequent media uploads you can use streams and upload data direcly on clouds (eg S3). To avoid overloading the main api you can create one or more instances of a microservice that manages file uploads only and updates the File table record when the upload is complete.
 
 # Running
 Make sure to create a .env and a .env.test.docker file with the following structure:
@@ -38,3 +40,6 @@ Feel free to run in your console `npm run test` for unit tests or `npm run test:
 If you have VSCode you should be able also to debug them using the Run and Debug section.
 ## Docker way
 I have setup a docker compose to launch both a postgres instance and the e2e tests. Check this [section](#if-you-want-to-test-from-your-command-prompt) and from the root launch in your console `docker-compose -f docker-compose-e2e.yml up`.
+
+# Schema
+The schema and initial data is at [containers/init.sql](./containers/init.sql)

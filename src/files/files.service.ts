@@ -6,9 +6,11 @@ import {
 } from "@nestjs/common";
 import * as fs from "fs";
 import { CreateFileDTO } from "./dto/create-file.dto";
-import { jsonArrayFrom } from "kysely/helpers/postgres";
+import { jsonArrayFrom, jsonObjectFrom } from "kysely/helpers/postgres";
 import { File } from "./interfaces/file.interface";
 import { DatabaseService } from "../database/database.service";
+import { FileStats } from "./interfaces/file-stats.interface";
+import { sql } from "kysely";
 
 const JPEG_JPG_SIGNATURES = [
   [0xff, 0xd8, 0xff, 0xdb],
@@ -191,5 +193,47 @@ export class FilesService {
       .executeTakeFirstOrThrow();
     return this.readFile(res?.file, res?.mimetype);
   }
-  async getStats() {}
+  async getStats(): Promise<FileStats> {
+    const byLanguage = await this.dbService
+      .getDb()
+      .selectFrom("files")
+      .select((eb) => [
+        sql<number>`COUNT(*)`.as("filesCountForLanguage"),
+        jsonObjectFrom(
+          eb
+            .selectFrom("languages")
+            .select(["languages.id", "languages.name"])
+            .whereRef("files.language", "=", "languages.id"),
+        ).as("language"),
+      ])
+      .groupBy(["files.language"])
+      .execute();
+
+    const byCategory = await this.dbService
+      .getDb()
+      .selectFrom("files")
+      .select((eb) => [
+        sql<number>`COUNT(*)`.as("filesCountForCategory"),
+        jsonObjectFrom(
+          eb
+            .selectFrom("categories")
+            .select(["categories.id", "categories.name"])
+            .whereRef("files.category", "=", "categories.id"),
+        ).as("category"),
+      ])
+      .groupBy(["files.category"])
+      .execute();
+
+    const totalFilesCount = await this.dbService
+      .getDb()
+      .selectFrom("files")
+      .select(() => [sql<number>`COUNT(*)`.as("count")])
+      .executeTakeFirst();
+
+    return {
+      byCategory,
+      byLanguage,
+      totalFilesCount: totalFilesCount?.count ?? 0,
+    };
+  }
 }

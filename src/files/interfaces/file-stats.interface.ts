@@ -1,9 +1,14 @@
 import { Category } from "./category.interface";
+import { Language } from "./language.interface";
 
 export interface FileStats {
-  filesByCategory: {
-    category: Category;
-    filesCout: number;
+  byLanguage: {
+    language: Language | null;
+    filesCountForLanguage: number;
   }[];
-  filesCount: number;
+  byCategory: {
+    category: Category | null;
+    filesCountForCategory: number;
+  }[];
+  totalFilesCount: number;
 }
