@@ -8,15 +8,6 @@ import { CreateFileDTO } from "../src/files/dto/create-file.dto";
 import { sql } from "kysely";
 
 describe("AppController (e2e)", () => {
-  // if (!process.env.DATABASE_HOST) {
-  //   process.env.DATABASE_HOST = "localhost";
-  //   process.env.DATABASE_NAME = "files";
-  //   process.env.DATABASE_USER = "user";
-  //   process.env.DATABASE_PASSWORD = "password";
-  //   process.env.DATABASE_PORT = 5432;
-  //   process.env.DATABASE_POOL = 10;
-  // }
-
   let app: INestApplication<App>;
 
   beforeEach(async () => {
@@ -33,20 +24,16 @@ describe("AppController (e2e)", () => {
     const res = await request(app.getHttpServer())
       .post("/files/upload")
       .set("Content-Type", "multipart/form-data")
-      .attach("file", "./test_files/clippy.jpg")
-      .field(
-        "data",
-        JSON.stringify({
-          category: 1,
-          description: "Test",
-          language: 1,
-          provider: 1,
-          roles: [1, 2],
-          title: "Test",
-          uploaded_by: 1,
-        } as CreateFileDTO),
-      );
-    expect(res.status).toBe(200);
+      .attach("file", "test/fixtures/clippy.jpg")
+      .field("category", 1)
+      .field("description", "Test")
+      .field("language", 1)
+      .field("provider", 1)
+      .field("roles", [1, 2])
+      .field("title", "Test")
+      .field("uploaded_by", 1);
+
+    expect(res.status).toBe(201);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     expect(res.body.id).toBeGreaterThan(0);
   });
@@ -55,24 +42,15 @@ describe("AppController (e2e)", () => {
     const res = await request(app.getHttpServer())
       .post("/files/upload")
       .set("Content-Type", "multipart/form-data")
-      .attach("file", "./test_files/clippy.pdf") //this is a jpg with a pdf extension, same as uploading an exe with a pdf extension
-      .field(
-        "data",
-        JSON.stringify(
-          JSON.stringify({
-            category: 1,
-            description: "Test",
-            language: 1,
-            provider: 1,
-            roles: [1, 2],
-            title: "Test",
-            uploaded_by: 1,
-          } as CreateFileDTO),
-        ),
-      );
-    expect(res.status).toBe(200);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    expect(res.body.id).toBeGreaterThan(0);
+      .attach("file", "test/fixtures/clippy.pdf") //this is a jpg with a pdf extension, same as uploading an exe with a pdf extension
+      .field("category", 1)
+      .field("description", "Test")
+      .field("language", 1)
+      .field("provider", 1)
+      .field("roles", [1, 2])
+      .field("title", "Test")
+      .field("uploaded_by", 1);
+    expect(res.status).toBe(400);
   });
 
   it("should retrieve all files", async () => {

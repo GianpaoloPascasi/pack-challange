@@ -1,16 +1,19 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
   Param,
   Post,
   Query,
+  StreamableFile,
   UploadedFile,
   UseInterceptors,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { CreateFileDTO } from "./dto/create-file.dto";
 import { FilesService } from "./files.service";
+import { validateCreateFileDTO } from "./validators/file.validator";
 
 @Controller("files")
 export class FilesController {
@@ -20,9 +23,12 @@ export class FilesController {
   @UseInterceptors(FileInterceptor("file"))
   async upload(
     @UploadedFile() file: Express.Multer.File,
-    @Body() data: CreateFileDTO,
+    @Body() body: CreateFileDTO,
   ) {
-    return await this.filesService.uploadAndCreateFile(file, data, 1);
+    if (!validateCreateFileDTO(body)) {
+      throw new BadRequestException();
+    }
+    return await this.filesService.uploadAndCreateFile(file, body, 1);
   }
 
   @Get()
@@ -33,9 +39,9 @@ export class FilesController {
     return await this.filesService.getAllFiles(page, itemsPerPage);
   }
 
-  @Get("file/:id")
-  async getFileById(@Param("id") id: number) {
-    return await this.filesService.getFileById(id);
+  @Get("download/:id")
+  async downloadFileById(@Param("id") id: number): Promise<StreamableFile> {
+    return await this.filesService.downloadFileById(id);
   }
 
   @Get("stats")

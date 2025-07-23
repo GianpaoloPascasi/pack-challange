@@ -1,7 +1,7 @@
 import { Generated } from "kysely";
 
 export interface File {
-  id: Generated<number>;
+  id: Generated<number> | number;
   title: string;
   description: string;
   category: number;

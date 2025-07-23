@@ -1,8 +1,13 @@
-import { Injectable } from "@nestjs/common";
-import * as fs from "fs/promises";
-import { InvalidFileError } from "./invalid-file-error";
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  StreamableFile,
+} from "@nestjs/common";
+import * as fs from "fs";
 import { db } from "../utils/db";
 import { CreateFileDTO } from "./dto/create-file.dto";
+import { jsonArrayFrom } from "kysely/helpers/postgres";
 import { File } from "./interfaces/file.interface";
 
 const JPEG_JPG_SIGNATURES = [
@@ -63,10 +68,13 @@ export class FilesService {
 
   async uploadFile(file: Express.Multer.File) {
     if (!this.validateUploadedFile(file)) {
-      throw new InvalidFileError();
+      throw new BadRequestException("Invalid_file");
     }
-    const fileName = `${Date.now()}.${file.mimetype.split("/").at(-1)}`;
-    await fs.writeFile(fileName, file.buffer);
+    if (!fs.existsSync("static")) {
+      fs.mkdirSync("static");
+    }
+    const fileName = `static/${Date.now()}.${file.mimetype.split("/").at(-1)}`;
+    await fs.promises.writeFile(fileName, file.buffer);
     return fileName;
   }
 
@@ -122,22 +130,48 @@ export class FilesService {
     return true;
   }
 
-  async getAllFiles(page: number, itemsPerPage: number) {
+  async getAllFiles(page: number, itemsPerPage: number): Promise<File[]> {
     const res = await db
       .selectFrom("files")
-      .selectAll()
+      .select((eb) => [
+        "id",
+        "category",
+        "description",
+        "file",
+        "language",
+        "mimetype",
+        "provider",
+        "title",
+        "uploaded_by",
+        jsonArrayFrom(
+          eb
+            .selectFrom("files_roles")
+            .select("role_id")
+            .whereRef("files_roles.file_id", "=", "files.id"),
+        ).as("roles"),
+      ])
       .limit(itemsPerPage)
-      .offset(page * itemsPerPage)
+      .offset((page - 1) * itemsPerPage)
       .execute();
     return res;
   }
-  async getFileById(id: number) {
+
+  readFile(url: string): StreamableFile {
+    if (!fs.existsSync(url)) {
+      throw new NotFoundException();
+    }
+    const file = fs.createReadStream(url);
+    return new StreamableFile(file);
+  }
+
+  async downloadFileById(id: number): Promise<StreamableFile> {
     const res = await db
       .selectFrom("files")
-      .selectAll()
+      .select("file")
       .where("id", "=", id)
-      .execute();
-    return res;
+      .executeTakeFirstOrThrow();
+
+    return this.readFile(res?.file);
   }
   async getStats() {}
 }
