@@ -11,6 +11,10 @@ describe("AppController (e2e)", () => {
   let app: INestApplication<App>;
 
   beforeEach(async () => {
+    jest.mock("sst", () => ({
+      Resource: { PackPSQLDb: { ...process.env } },
+    }));
+
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [FilesModule],
       providers: [DatabaseService],
