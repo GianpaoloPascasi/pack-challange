@@ -2,7 +2,7 @@ services:
   nodeapp:
       image: node:22
       env_file: 
-        - ../.env.test.local
+        - ../.env.test.docker
       working_dir: /app
       volumes:
         - ../.:/app

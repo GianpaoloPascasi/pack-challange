@@ -5,10 +5,10 @@ import {
   StreamableFile,
 } from "@nestjs/common";
 import * as fs from "fs";
-import { db } from "../utils/db";
 import { CreateFileDTO } from "./dto/create-file.dto";
 import { jsonArrayFrom } from "kysely/helpers/postgres";
 import { File } from "./interfaces/file.interface";
+import { DatabaseService } from "../database/database.service";
 
 const JPEG_JPG_SIGNATURES = [
   [0xff, 0xd8, 0xff, 0xdb],
@@ -17,6 +17,8 @@ const JPEG_JPG_SIGNATURES = [
 ];
 @Injectable()
 export class FilesService {
+  constructor(private dbService: DatabaseService) {}
+
   async uploadAndCreateFile(
     file: Express.Multer.File,
     data: CreateFileDTO,
@@ -32,7 +34,8 @@ export class FilesService {
     mimetype: string,
     userId: number,
   ): Promise<CreateFileDTO> {
-    const res = await db
+    const res = await this.dbService
+      .getDb()
       .insertInto("files")
       .values({
         category: data.category,
@@ -57,7 +60,8 @@ export class FilesService {
       ])
       .executeTakeFirstOrThrow();
 
-    const roles = await db
+    const roles = await this.dbService
+      .getDb()
       .insertInto("files_roles")
       .values(data.roles.map((e) => ({ file_id: res.id, role_id: e })))
       .returning("role_id")
@@ -142,7 +146,8 @@ export class FilesService {
     if (!itemsPerPage) {
       itemsPerPage = 10;
     }
-    const res = await db
+    const res = await this.dbService
+      .getDb()
       .selectFrom("files")
       .select((eb) => [
         "id",
@@ -178,7 +183,8 @@ export class FilesService {
   }
 
   async downloadFileById(id: number): Promise<StreamableFile> {
-    const res = await db
+    const res = await this.dbService
+      .getDb()
       .selectFrom("files")
       .select(["file", "mimetype"])
       .where("id", "=", id)

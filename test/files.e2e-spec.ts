@@ -3,9 +3,9 @@ import { INestApplication } from "@nestjs/common";
 import { App } from "supertest/types";
 import * as request from "supertest";
 import { FilesModule } from "../src/files/files.module";
-import { db } from "../src/utils/db";
 import { CreateFileDTO } from "../src/files/dto/create-file.dto";
 import { sql } from "kysely";
+import { DatabaseService } from "../src/database/database.service";
 
 describe("AppController (e2e)", () => {
   let app: INestApplication<App>;
@@ -13,11 +13,14 @@ describe("AppController (e2e)", () => {
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [FilesModule],
+      providers: [DatabaseService],
     }).compile();
 
     app = moduleFixture.createNestApplication();
     await app.init();
-    await sql`truncate table files restart identity cascade;`.execute(db);
+    await sql`truncate table files restart identity cascade;`.execute(
+      app.get<DatabaseService>(DatabaseService).getDb(),
+    );
   });
 
   it("should upload file", async () => {
@@ -54,7 +57,9 @@ describe("AppController (e2e)", () => {
   });
 
   it("should retrieve all files", async () => {
-    await db
+    await app
+      .get<DatabaseService>(DatabaseService)
+      .getDb()
       .insertInto("files")
       .values([
         {
@@ -80,7 +85,9 @@ describe("AppController (e2e)", () => {
       ])
       .execute();
 
-    await db
+    await app
+      .get<DatabaseService>(DatabaseService)
+      .getDb()
       .insertInto("files_roles")
       .values([
         {
