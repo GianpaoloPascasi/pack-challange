@@ -15,11 +15,11 @@ if (process.env.NODE_ENV) {
 
 const dialect = new PostgresDialect({
   pool: new Pool({
-    database: Resource. ?? process.env.DATABASE_NAME,
-    host: process.env.DATABASE_HOST,
-    user: process.env.DATABASE_USER,
-    password: process.env.DATABASE_PASSWORD,
-    port: process.env.DATABASE_PORT ?? 5434,
+    database: Resource.PackPSQLDb.database ?? process.env.DATABASE_NAME,
+    host: Resource.PackPSQLDb.host ?? process.env.DATABASE_HOST,
+    user: Resource.PackPSQLDb.username ?? process.env.DATABASE_USER,
+    password: Resource.PackPSQLDb.password ?? process.env.DATABASE_PASSWORD,
+    port: Resource.PackPSQLDb.port ?? process.env.DATABASE_PORT ?? 5434,
     max: process.env.DATABASE_POOL ?? 10,
   }),
 });

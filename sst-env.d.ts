@@ -5,13 +5,22 @@
 
 declare module "sst" {
   export interface Resource {
-    "MyService": {
+    "PackPSQLDb": {
+      "database": string
+      "host": string
+      "password": string
+      "port": number
+      "type": "sst.aws.Postgres"
+      "username": string
+    }
+    "PackVpc": {
+      "bastion": string
+      "type": "sst.aws.Vpc"
+    }
+    "PackWeb": {
       "service": string
       "type": "sst.aws.Service"
       "url": string
-    }
-    "MyVpc": {
-      "type": "sst.aws.Vpc"
     }
   }
 }

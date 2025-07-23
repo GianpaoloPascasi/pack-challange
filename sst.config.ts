@@ -10,15 +10,21 @@ export default $config({
     };
   },
   async run() {
-    const vpc = new sst.aws.Vpc("PackVpc");
+    const vpc = new sst.aws.Vpc("PackVpc", { bastion: true });
     const cluster = new sst.aws.Cluster("PackCluster", { vpc });
 
     const database = new sst.aws.Postgres("PackPSQLDb", {
       vpc,
+      dev: {
+        username: "user",
+        password: "password",
+        database: "files",
+        port: 5432
+      },
       database: "files",
     });
 
-    new sst.aws.Service("NestService", {
+    new sst.aws.Service("PackWeb", {
       cluster,
       loadBalancer: {
         ports: [{ listen: "80/http", forward: "3000/http" }],
@@ -26,8 +32,9 @@ export default $config({
       dev: {
         command: "npm run start:dev",
       },
-      command: ["npm", "run", "start:prod"],
       link: [database],
+    }, {
+      dependsOn: [database]
     });
   },
 });
