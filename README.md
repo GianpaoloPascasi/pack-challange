@@ -20,7 +20,7 @@ To run the production version open docker, cd into the root folder of the projec
 To run e2e tests open docker, cd into the root folder of the project and in a terminal write down `docker-compose -f docker-compose-e2e.yml up`.
 
 # How does API work
-Check postman collection as reference (pack.postman_collection)
+Check postman collection as reference [pack.postman_collection](pack.postman_collection)
 
 # How to test
 ## If you want to test from your command prompt
