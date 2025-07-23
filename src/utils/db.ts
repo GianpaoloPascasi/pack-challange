@@ -2,6 +2,15 @@ import { Pool } from "pg";
 import { Kysely, PostgresDialect } from "kysely";
 import { File } from "../files/interfaces/file.interface";
 import { FileRoles } from "../files/interfaces/file_roles.interface";
+import * as dotenv from "dotenv";
+
+if (process.env.NODE_ENV) {
+  dotenv.config({
+    path: ".env." + process.env.NODE_ENV,
+  });
+} else {
+  dotenv.config();
+}
 
 const dialect = new PostgresDialect({
   pool: new Pool({

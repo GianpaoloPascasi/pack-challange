@@ -2,11 +2,11 @@ services:
   nodeapp:
       image: node:22
       env_file: 
-        - ../env
+        - ../.env
       working_dir: /app
       volumes:
         - ../.:/app
-      command: bash -c "npm i && npm run start:prod"
+      command: bash -c "npm i && npm run build && npm run start:prod"
       ports:
         - "3000:3000"
       depends_on:

@@ -44,25 +44,30 @@ export class FilesService {
         provider: data.provider,
         uploaded_by: userId,
       })
-      .returning(["id"])
+      .returning([
+        "id",
+        "category",
+        "description",
+        "file",
+        "language",
+        "mimetype",
+        "provider",
+        "title",
+        "uploaded_by",
+      ])
       .executeTakeFirstOrThrow();
 
-    await db
+    const roles = await db
       .insertInto("files_roles")
       .values(data.roles.map((e) => ({ file_id: res.id, role_id: e })))
+      .returning("role_id")
       .execute();
 
     return {
-      category: data.category,
-      description: data.description,
+      ...res,
+      roles: roles.map((e) => e.role_id),
       file: fileUrl,
-      language: data.language,
       mimetype: mimetype,
-      title: data.title,
-      provider: data.provider,
-      id: res.id,
-      roles: data.roles,
-      uploaded_by: userId,
     };
   }
 
@@ -131,6 +136,12 @@ export class FilesService {
   }
 
   async getAllFiles(page: number, itemsPerPage: number): Promise<File[]> {
+    if (!page) {
+      page = 1;
+    }
+    if (!itemsPerPage) {
+      itemsPerPage = 10;
+    }
     const res = await db
       .selectFrom("files")
       .select((eb) => [
@@ -156,22 +167,23 @@ export class FilesService {
     return res;
   }
 
-  readFile(url: string): StreamableFile {
+  readFile(url: string, mimetype: string): StreamableFile {
     if (!fs.existsSync(url)) {
       throw new NotFoundException();
     }
     const file = fs.createReadStream(url);
-    return new StreamableFile(file);
+    return new StreamableFile(file, {
+      type: mimetype,
+    });
   }
 
   async downloadFileById(id: number): Promise<StreamableFile> {
     const res = await db
       .selectFrom("files")
-      .select("file")
+      .select(["file", "mimetype"])
       .where("id", "=", id)
       .executeTakeFirstOrThrow();
-
-    return this.readFile(res?.file);
+    return this.readFile(res?.file, res?.mimetype);
   }
   async getStats() {}
 }
