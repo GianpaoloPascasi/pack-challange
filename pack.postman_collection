@@ -17,26 +17,26 @@
 						{
 							"key": "file",
 							"type": "file",
-							"src": "/C:/Users/Gianpaolo/Downloads/clippy.jpg"
+							"src": "/C:/Users/Gianpaolo/Pictures/Screenshots/Screenshot 2025-04-01 160516.png"
 						},
 						{
 							"key": "title",
-							"value": "Test",
+							"value": "Common stuff",
 							"type": "text"
 						},
 						{
 							"key": "category",
-							"value": "1",
+							"value": "2",
 							"type": "text"
 						},
 						{
 							"key": "description",
-							"value": "Test desc",
+							"value": "Common stuff",
 							"type": "text"
 						},
 						{
 							"key": "language",
-							"value": "1",
+							"value": "3",
 							"type": "text"
 						},
 						{
@@ -152,7 +152,31 @@
 			"name": "GetStats",
 			"request": {
 				"method": "GET",
-				"header": []
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/files/stats",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"files",
+						"stats"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Home",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}",
+					"host": [
+						"{{baseUrl}}"
+					]
+				}
 			},
 			"response": []
 		}
@@ -186,6 +210,12 @@
 		{
 			"key": "baseUrl",
 			"value": "http://localhost:3000",
+			"type": "string",
+			"disabled": true
+		},
+		{
+			"key": "baseUrl",
+			"value": "",
 			"type": "string"
 		}
 	]

@@ -1,14 +1,11 @@
 # Stack used
 NestJS (easier for boilerplate code, tests ecc), Postgres and Kysely.
 
+# AWS URL
+[http://packwebloadbala-fusstxak-1072168013.eu-central-1.elb.amazonaws.com/](http://packwebloadbala-fusstxak-1072168013.eu-central-1.elb.amazonaws.com/)
+
 # Tests to watch 
 I did some exaple tests in app\uploader-api\test\files.e2e-spec.ts (E2E) and app\uploader-api\src\files\files.service.spec.ts (Unit test).
-
-# What I hadn't time to do and other ideas
-- I did the best effort to give an example of bit wise file validation but I could add other file types and signatures.
-- Files could be scanned by an antivirus service (like virustotal api or similar).
-- About multitenantcy this service could be replicated (both apis and database instances) for every provider (Pack or other companies) to avoid overloading one service with all the multimedia.
-- To handle heavy and frequent media uploads you can use streams and upload data direcly on clouds (eg S3). To avoid overloading the main api you can create one or more instances of a microservice that manages file uploads only and updates the File table record when the upload is complete.
 
 # Running
 Make sure to create a .env and a .env.test.docker file with the following structure:
@@ -43,3 +40,11 @@ I have setup a docker compose to launch both a postgres instance and the e2e tes
 
 # Schema
 The schema and initial data is at [containers/init.sql](./containers/init.sql)
+
+# What I hadn't time to do and other ideas
+- About multitenantcy this service could be replicated (both apis and database instances) for every provider (Pack or other companies) to avoid overloading one service with massive multimedia uploads
+(maybe a provider is migratin all it's content in a couple of days and overloads the traffic).
+- To handle heavy and frequent media uploads you could use streams (for videos) and upload data direcly on clouds (eg S3). To avoid overloading the main api you could create one or more instances of a microservice that manages file uploads only and updates the files table record when the upload is complete. You could also stream files directly from S3 and avoiding to proxy clients using the backend.
+- Using an authentication system you can track files usage by user. Every time a user downloads or streams a file the you could log the access on a table and aggregate access data for statistics (access by nation, company, language, role). I skipped implementing the auth system due to lack of time.
+- I did the best effort to give an example of bit wise file validation but I could add other file types and signatures. I implemented this feature because I think that it is a valuable case for unit testing.
+- Files could be scanned by an antivirus service (like virustotal api or similar).
