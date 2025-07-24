@@ -62,3 +62,7 @@ I used bcrypt as hashing algorithm which is pretty strong and secure.
 ## File security
 I did the best effort to give an example of bit wise file validation but I could add other file types and signatures. I implemented this feature because I think that it is a valuable case for unit testing.
 Files could be scanned by an antivirus service (like virustotal api or similar).
+
+## Data aggregation for stats
+I did just some basic aggregations, i didn't structure a more "complex" database to track user interaction as shown in the image 4 of the challenge attachments.
+I thought to create a simple api call to provide all possible data to the FE and give to it all the ways to manipulate data to show in the charts.
