@@ -52,8 +52,8 @@ To avoid overloading the main api you could create one or more instances of a mi
 ## Authentication/authorization
 ## In general
 Before going in production is essential to implement an authentication level. Authentication can be useful to then authorize user access to routes or other content and disallow unauthorized access to sensitive data and nowadays also to malicious bots/scrapers.
-Using an authorization system you can allow track files usage by user. Every time a user downloads or streams a file the you could log the access on a table and aggregate access data for statistics (access by nation, company, language, role). 
-It can be useful to track CRUD operations on entities and manage it (eg admins can create and delete files, users can only see them).
+Using an authorization system you can allow track files usage by user. Every time a user uploads, downloads or streams a file the you could log the access on a table and aggregate access data for statistics (access by provider, language, role). I did a little stub of this feature consisting in tracking user who uploaded the file.
+Authorization can be useful to track CRUD operations on entities and authorize them (eg admins can create and delete files, users can only see them).
 ## What i did
 I just implemented an authentication system for semplicity, which is just a layer that allows access to all resources. I used JWT bearer tokens, which is one of the most used technique nowadays to track user access in a sessionless and stateless way for Single Pages Apps or mobile apps.
 In a production environment you should have an authorization layer to make sure you can mange user roles segregation (if needed).
