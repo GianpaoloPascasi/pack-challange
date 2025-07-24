@@ -12,6 +12,7 @@ declare global {
       DATABASE_PASSWORD: string;
       DATABASE_PORT?: number;
       DATABASE_POOL?: number;
+      BUCKET_NAME: string;
     }
   }
 }

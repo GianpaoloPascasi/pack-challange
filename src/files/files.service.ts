@@ -2,15 +2,21 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
-  StreamableFile,
 } from "@nestjs/common";
-import * as fs from "fs";
 import { CreateFileDTO } from "./dto/create-file.dto";
 import { jsonArrayFrom, jsonObjectFrom } from "kysely/helpers/postgres";
 import { File } from "./interfaces/file.interface";
 import { DatabaseService } from "../database/database.service";
 import { FileStats } from "./interfaces/file-stats.interface";
 import { sql } from "kysely";
+import {
+  GetObjectCommand,
+  GetObjectCommandInput,
+  S3Client,
+} from "@aws-sdk/client-s3";
+import { Resource } from "sst";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { Upload } from "@aws-sdk/lib-storage";
 
 const JPEG_JPG_SIGNATURES = [
   [0xff, 0xd8, 0xff, 0xdb],
@@ -19,7 +25,11 @@ const JPEG_JPG_SIGNATURES = [
 ];
 @Injectable()
 export class FilesService {
-  constructor(private dbService: DatabaseService) {}
+  private s3Client: S3Client;
+
+  constructor(private dbService: DatabaseService) {
+    this.s3Client = new S3Client({});
+  }
 
   async uploadAndCreateFile(
     file: Express.Multer.File,
@@ -77,18 +87,6 @@ export class FilesService {
     };
   }
 
-  async uploadFile(file: Express.Multer.File) {
-    if (!this.validateUploadedFile(file)) {
-      throw new BadRequestException("Invalid_file");
-    }
-    if (!fs.existsSync("static")) {
-      fs.mkdirSync("static");
-    }
-    const fileName = `static/${Date.now()}.${file.mimetype.split("/").at(-1)}`;
-    await fs.promises.writeFile(fileName, file.buffer);
-    return fileName;
-  }
-
   validateUploadedFile(file: Express.Multer.File): boolean {
     const allowedMimeTypes = [
       {
@@ -141,6 +139,51 @@ export class FilesService {
     return true;
   }
 
+  async uploadFile(file: Express.Multer.File) {
+    if (!this.validateUploadedFile(file)) {
+      throw new BadRequestException("Invalid_file");
+    }
+    const fileName = `${file.originalname.split(".").at(0)}_${Date.now()}.${file.mimetype.split("/").at(-1)}`;
+
+    const upload = new Upload({
+      params: {
+        Bucket: process.env.BUCKET_NAME ?? Resource.PackMultimediaBucket.name,
+        ContentType: file.mimetype,
+        Key: fileName,
+        Body: file.buffer,
+      },
+      client: this.s3Client,
+    });
+
+    await upload.done();
+
+    return fileName;
+  }
+
+  async readFile(url: string): Promise<string> {
+    // if (!fs.existsSync(url)) {
+    //   throw new NotFoundException();
+    // }
+    // const file = fs.createReadStream(url);
+    const params: GetObjectCommandInput = {
+      Bucket: process.env.BUCKET_NAME ?? Resource.PackMultimediaBucket.name,
+      Key: url,
+    };
+
+    const command = new GetObjectCommand(params);
+    const res = await this.s3Client.send(command);
+
+    if (!res.Body) {
+      throw new NotFoundException();
+    }
+
+    const signedUrl = await getSignedUrl(this.s3Client, command, {
+      expiresIn: 3600,
+    });
+    // const stream = res.Body.transformToWebStream();
+    return signedUrl;
+  }
+
   async getAllFiles(page: number, itemsPerPage: number): Promise<File[]> {
     if (!page) {
       page = 1;
@@ -174,24 +217,14 @@ export class FilesService {
     return res;
   }
 
-  readFile(url: string, mimetype: string): StreamableFile {
-    if (!fs.existsSync(url)) {
-      throw new NotFoundException();
-    }
-    const file = fs.createReadStream(url);
-    return new StreamableFile(file, {
-      type: mimetype,
-    });
-  }
-
-  async downloadFileById(id: number): Promise<StreamableFile> {
+  async downloadFileById(id: number): Promise<string> {
     const res = await this.dbService
       .getDb()
       .selectFrom("files")
-      .select(["file", "mimetype"])
+      .select(["file"])
       .where("id", "=", id)
       .executeTakeFirstOrThrow();
-    return this.readFile(res?.file, res?.mimetype);
+    return await this.readFile(res?.file);
   }
   async getStats(): Promise<FileStats> {
     const byLanguage = await this.dbService

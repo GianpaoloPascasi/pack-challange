@@ -41,8 +41,25 @@ describe("AppController (e2e)", () => {
       .field("uploaded_by", 1);
 
     expect(res.status).toBe(201);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    expect(res.body.id).toBeGreaterThan(0);
+    const body = res.body as { id: number };
+    expect(body.id).toBeGreaterThan(0);
+
+    const download = await request(app.getHttpServer())
+      .get("/files/download/" + body.id)
+      .send();
+
+    expect(download.status).toBe(200);
+    const url = (download.body as { url: string }).url;
+    expect(url).toBeTruthy();
+    expect(url.includes(process.env.BUCKET_NAME));
+  });
+
+  it("should not find an unexisting file", async () => {
+    const download = await request(app.getHttpServer())
+      .get("/files/download/1000")
+      .send();
+
+    expect(download.status).toBe(404);
   });
 
   it("should not upload a file with invalid signature", async () => {

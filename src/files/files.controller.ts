@@ -6,7 +6,6 @@ import {
   Param,
   Post,
   Query,
-  StreamableFile,
   UploadedFile,
   UseInterceptors,
 } from "@nestjs/common";
@@ -14,8 +13,10 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { CreateFileDTO } from "./dto/create-file.dto";
 import { FilesService } from "./files.service";
 import { validateCreateFileDTO } from "./validators/file.validator";
+import { SqlNotFoundInterceptorInterceptor } from "../sql-not-found-interceptor/sql-not-found-interceptor.interceptor";
 
 @Controller("files")
+@UseInterceptors(SqlNotFoundInterceptorInterceptor)
 export class FilesController {
   constructor(private filesService: FilesService) {}
 
@@ -40,8 +41,9 @@ export class FilesController {
   }
 
   @Get("download/:id")
-  async downloadFileById(@Param("id") id: number): Promise<StreamableFile> {
-    return await this.filesService.downloadFileById(id);
+  async downloadFileById(@Param("id") id: number) {
+    const url = await this.filesService.downloadFileById(id);
+    return { url };
   }
 
   @Get("stats")

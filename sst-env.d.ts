@@ -5,6 +5,10 @@
 
 declare module "sst" {
   export interface Resource {
+    "PackMultimediaBucket": {
+      "name": string
+      "type": "sst.aws.Bucket"
+    }
     "PackPSQLDb": {
       "database": string
       "host": string
