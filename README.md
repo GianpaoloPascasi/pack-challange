@@ -21,7 +21,8 @@ AWS local credentials are shared with docker-compose to allow S3 buckets to work
 # How does API work
 Obtain a jwt token from the login api using the sample account `user1:m!Str0ngP4sswd` or create a new one from the signup endpoint.
 Every request done under the `files` route must have an Authorization Bearer token in the headers.
-Check postman collection as reference [pack.postman_collection](pack.postman_collection)
+Check the Postman collection as reference [pack.postman_collection](pack.postman_collection).
+If you run the collection in Postman adjust the baseUrl (host) in the collection variables and just login with the prefilled variables or signup and then login with new ones. The bearer token is set automatically via Postman response scripting so it should be all plug and play.
 
 # How to test
 

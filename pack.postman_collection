@@ -7,178 +7,362 @@
 	},
 	"item": [
 		{
-			"name": "Upload",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "file",
-							"type": "file",
-							"src": "/C:/Users/Gianpaolo/Pictures/Screenshots/Screenshot 2025-04-01 160516.png"
+			"name": "Files",
+			"item": [
+				{
+					"name": "Upload",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/C:/Users/Gianpaolo/Pictures/Screenshots/Screenshot 2025-04-01 160516.png"
+								},
+								{
+									"key": "title",
+									"value": "Test",
+									"type": "text"
+								},
+								{
+									"key": "category",
+									"value": "2",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Test",
+									"type": "text"
+								},
+								{
+									"key": "language",
+									"value": "3",
+									"type": "text"
+								},
+								{
+									"key": "provider",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "roles[1]",
+									"value": "2",
+									"type": "text"
+								},
+								{
+									"key": "roles[0]",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "uploaded_by",
+									"value": "1",
+									"type": "text"
+								}
+							]
 						},
-						{
-							"key": "title",
-							"value": "Common stuff",
-							"type": "text"
-						},
-						{
-							"key": "category",
-							"value": "2",
-							"type": "text"
-						},
-						{
-							"key": "description",
-							"value": "Common stuff",
-							"type": "text"
-						},
-						{
-							"key": "language",
-							"value": "3",
-							"type": "text"
-						},
-						{
-							"key": "provider",
-							"value": "1",
-							"type": "text"
-						},
-						{
-							"key": "roles[1]",
-							"value": "2",
-							"type": "text"
-						},
-						{
-							"key": "roles[0]",
-							"value": "1",
-							"type": "text"
-						},
-						{
-							"key": "uploaded_by",
-							"value": "1",
-							"type": "text"
+						"url": {
+							"raw": "{{baseUrl}}/files/upload",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"files",
+								"upload"
+							]
 						}
-					]
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "{{baseUrl}}/files/upload",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"files",
-						"upload"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "GetAll",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{baseUrl}}/files?page=1&itemsPerPage=10",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"files"
-					],
-					"query": [
-						{
-							"key": "page",
-							"value": "1"
-						},
-						{
-							"key": "itemsPerPage",
-							"value": "10"
+				{
+					"name": "GetAll",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/files?page=1&itemsPerPage=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"files"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "itemsPerPage",
+									"value": "10"
+								}
+							]
 						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "DownloadById",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "file",
-							"type": "file",
-							"src": []
-						},
-						{
-							"key": "title",
-							"value": "Test",
-							"type": "text"
-						},
-						{
-							"key": "category",
-							"value": "1",
-							"type": "text"
-						},
-						{
-							"key": "description",
-							"value": "Test desc",
-							"type": "text"
-						}
-					]
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "{{baseUrl}}/files/download/4",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"files",
-						"download",
-						"4"
-					]
+				{
+					"name": "DownloadById",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "title",
+									"value": "Test",
+									"type": "text"
+								},
+								{
+									"key": "category",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Test desc",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/files/download/3",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"files",
+								"download",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "MetaById",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "title",
+									"value": "Test",
+									"type": "text"
+								},
+								{
+									"key": "category",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Test desc",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/files/meta/4",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"files",
+								"meta",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetStats",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/files/stats",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"files",
+								"stats"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Home",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
 				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{jwt}}",
+						"type": "string"
+					}
+				]
 			},
-			"response": []
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
 		},
 		{
-			"name": "GetStats",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{baseUrl}}/files/stats",
-					"host": [
-						"{{baseUrl}}"
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Signup",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"pippo\",\r\n    \"password\": \"pluto\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/signup",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"signup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"jwt\", pm.response.json().jwt);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
 					],
-					"path": [
-						"files",
-						"stats"
-					]
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"user1\",\r\n    \"password\": \"m!Str0ngP4sswd\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Account",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/auth/account",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"account"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
-		},
-		{
-			"name": "Home",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{baseUrl}}",
-					"host": [
-						"{{baseUrl}}"
-					]
-				}
-			},
-			"response": []
+			]
 		}
 	],
 	"auth": {
@@ -209,14 +393,12 @@
 	"variable": [
 		{
 			"key": "baseUrl",
-			"value": "http://localhost:3000",
-			"type": "string",
-			"disabled": true
+			"value": "localhost:300",
+			"type": "string"
 		},
 		{
-			"key": "baseUrl",
-			"value": "",
-			"type": "string"
+			"key": "jwt",
+			"value": ""
 		}
 	]
 }
