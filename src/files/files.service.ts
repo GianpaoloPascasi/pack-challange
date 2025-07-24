@@ -226,6 +226,7 @@ export class FilesService {
       .executeTakeFirstOrThrow();
     return await this.readFile(res?.file);
   }
+
   async getStats(): Promise<FileStats> {
     const byLanguage = await this.dbService
       .getDb()
@@ -268,5 +269,15 @@ export class FilesService {
       byLanguage,
       totalFilesCount: totalFilesCount?.count ?? 0,
     };
+  }
+
+  async fileMetaById(id: number): Promise<File> {
+    const res = await this.dbService
+      .getDb()
+      .selectFrom("files")
+      .selectAll()
+      .where("id", "=", id)
+      .executeTakeFirstOrThrow();
+    return res;
   }
 }

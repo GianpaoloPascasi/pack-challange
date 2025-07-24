@@ -47,7 +47,7 @@ insert into languages(name) values ('Italian'), ('English'), ('French');
 insert into providers(name) values ('Pack'), ('HR Comp');
 insert into roles(name) values ('Mentor/Coach'), ('Mentee/Coachee');
 
-insert into users(username, password) values ('user1', '$2a$05$/rOKLQ9ESkNj7cFJfYMU7O0LhgaKy/EX.p8UqWArHTZtutfbcVqdK');
+insert into users(username, password) values ('user1', '$2a$12$4Ua5WCi0K/wnQuyAsGjFNeYzaQt32JrYO4jjswA4sRPiccFd8Bk.y');
 
 insert into files (title, description, category, language, provider, file, mimetype, uploaded_by)
             values ('How to deal with conflict in work environment', 'Solving conflicts and improve comunication', 1, 2, 1, 'https://myhost.com/myfile.pdf', 'application/pdf', 1);

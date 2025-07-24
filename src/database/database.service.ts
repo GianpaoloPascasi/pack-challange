@@ -6,12 +6,14 @@ import { Resource } from "sst";
 import { File } from "../files/interfaces/file.interface";
 import { Category } from "../files/interfaces/category.interface";
 import { Language } from "../files/interfaces/language.interface";
+import { User } from "../user/user.interface";
 
 interface DatabaseTables {
   files: File;
   files_roles: FileRoles;
   categories: Category;
   languages: Language;
+  users: User;
 }
 
 @Injectable()

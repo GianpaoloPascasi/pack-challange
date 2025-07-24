@@ -13,6 +13,8 @@ declare global {
       DATABASE_PORT?: number;
       DATABASE_POOL?: number;
       BUCKET_NAME: string;
+      BCRYPT_ROUNDS: string;
+      JWT_SECRET: string;
     }
   }
 }

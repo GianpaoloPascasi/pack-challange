@@ -6,9 +6,11 @@ import { FilesModule } from "../src/files/files.module";
 import { CreateFileDTO } from "../src/files/dto/create-file.dto";
 import { sql } from "kysely";
 import { DatabaseService } from "../src/database/database.service";
+import { File } from "../src/files/interfaces/file.interface";
 
-describe("AppController (e2e)", () => {
+describe("FilesController (e2e)", () => {
   let app: INestApplication<App>;
+  let jwt: string;
 
   beforeEach(async () => {
     jest.mock("sst", () => ({
@@ -25,12 +27,20 @@ describe("AppController (e2e)", () => {
     await sql`truncate table files restart identity cascade;`.execute(
       app.get<DatabaseService>(DatabaseService).getDb(),
     );
+
+    const res = await request(app.getHttpServer()).post("/auth/login").send({
+      username: "user1",
+      password: "m!Str0ngP4sswd",
+    });
+
+    jwt = (res.body as { jwt: string }).jwt;
   });
 
   it("should upload file", async () => {
     const res = await request(app.getHttpServer())
       .post("/files/upload")
       .set("Content-Type", "multipart/form-data")
+      .set("Authorization", "Bearer " + jwt)
       .attach("file", "test/fixtures/clippy.jpg")
       .field("category", 1)
       .field("description", "Test")
@@ -46,17 +56,28 @@ describe("AppController (e2e)", () => {
 
     const download = await request(app.getHttpServer())
       .get("/files/download/" + body.id)
+      .set("Authorization", "Bearer " + jwt)
       .send();
 
     expect(download.status).toBe(200);
     const url = (download.body as { url: string }).url;
     expect(url).toBeTruthy();
     expect(url.includes(process.env.BUCKET_NAME));
+
+    const meta = await request(app.getHttpServer())
+      .get("/files/meta/" + body.id)
+      .set("Authorization", "Bearer " + jwt)
+      .send();
+
+    expect(meta.status).toBe(200);
+    const file = meta.body as File;
+    expect(file.uploaded_by).toBe(1);
   });
 
   it("should not find an unexisting file", async () => {
     const download = await request(app.getHttpServer())
       .get("/files/download/1000")
+      .set("Authorization", "Bearer " + jwt)
       .send();
 
     expect(download.status).toBe(404);
@@ -65,6 +86,7 @@ describe("AppController (e2e)", () => {
   it("should not upload a file with invalid signature", async () => {
     const res = await request(app.getHttpServer())
       .post("/files/upload")
+      .set("Authorization", "Bearer " + jwt)
       .set("Content-Type", "multipart/form-data")
       .attach("file", "test/fixtures/clippy.pdf") //this is a jpg with a pdf extension, same as uploading an exe with a pdf extension
       .field("category", 1)
@@ -132,6 +154,7 @@ describe("AppController (e2e)", () => {
 
     return request(app.getHttpServer())
       .get("/files")
+      .set("Authorization", "Bearer " + jwt)
       .query("page=1")
       .query("itemsPerPage=10")
       .send()

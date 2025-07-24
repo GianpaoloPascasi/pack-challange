@@ -38,6 +38,10 @@ export default $config({
           command: "npm run start:dev",
         },
         link: [database, bucket],
+        environment: {
+          BCRYPT_ROUNDS: "12",
+          JWT_SECRET: "not-production-stuff-to-do-prefer-a-signin-certificate",
+        },
       },
       {
         dependsOn: [database, bucket],
