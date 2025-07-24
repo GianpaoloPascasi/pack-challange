@@ -1,14 +1,15 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { FilesService } from "./files.service";
 import { createMulterFile } from "../utils/create-multer-file";
+import { DatabaseService } from "../database/database.service";
 
 describe("FilesService", () => {
   let service: FilesService;
-  const testFilesDir = `${__dirname}../../../test/test_files`;
+  const testFilesDir = `${__dirname}/../../test/fixtures`;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [FilesService],
+      providers: [FilesService, DatabaseService],
     }).compile();
 
     service = module.get<FilesService>(FilesService);

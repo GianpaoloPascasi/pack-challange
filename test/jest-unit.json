@@ -4,14 +4,14 @@
     "json",
     "ts"
   ],
-  "rootDir": ".",
+  "rootDir": "../src",
   "testEnvironment": "node",
   "testRegex": ".spec.ts$",
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
   "setupFilesAfterEnv": [
-    "./setup.ts"
+    "../test/setup.ts"
   ],
   "transformIgnorePatterns": [
     "node_modules/(?!sst)"

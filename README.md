@@ -16,17 +16,17 @@ BUCKET_NAME=pack-challange-gianpaolo-packmultimediabucketbucket-fxmunxcr
 ```
 To run the production version open docker, cd into the root folder of the project and in a terminal write down `docker-compose up`.
 To run e2e tests open docker, cd into the root folder of the project and in a terminal write down `docker-compose -f docker-compose-e2e.yml up`.
-AWS local credentials are shared with docker-compose to allow S3 buckets to work, you need to configure your local aws cli.
+AWS local credentials are shared with docker-compose to allow S3 buckets to work so you need to configure your local aws cli.
 
 # How does API work
-Obtain a jwt token from the login api using the sample account `user1:m!Str0ngP4sswd` or create a new one from the signup endpoint.
-Every request done under the `files` route must have an Authorization Bearer token in the headers.
+Obtain a jwt token from the login api using the sample account `user1:m!Str0ngP4sswd` or create a new one from the signup endpoint and then login.
+Every request done under the `files` route must have an Authorization Bearer JWT token in the headers (`Authorization: Bearer {JWT}`).
 Check the Postman collection as reference [pack.postman_collection](pack.postman_collection).
-If you run the collection in Postman adjust the baseUrl (host) in the collection variables and just login with the prefilled variables or signup and then login with new ones. The bearer token is set automatically via Postman response scripting so it should be all plug and play.
+If you run the collection in Postman adjust the baseUrl (host) in the collection variables and just login with the prefilled variables or signup and then login with new ones. The bearer token is set automatically via Postman response scripting so it should be all plug and play if you use the AWS host.
 
-# How to test
+# How to launch tests
 
-## If you want to test from your command prompt
+## If you want to run tests from your command prompt
 Make sure to have a postgres instance running and populate a file called `.env.test.local` in the root project folder with [this same structure](#running).
 Feel free to run in your console `npm run test` for unit tests or `npm run test:e2e` for end to end tests.
 If you have VSCode you should be able also to debug them using the Run and Debug section.
