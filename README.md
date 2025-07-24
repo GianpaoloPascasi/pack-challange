@@ -39,8 +39,8 @@ The schema and initial data is at [containers/init.sql](./containers/init.sql)
 
 # What I hadn't time to do and other ideas
 
-## Multitenantcy
-About multitenantcy this service could be replicated (both apis and database instances) for every provider (Pack or other companies) to avoid overloading one service with massive multimedia uploads
+## Multitenancy
+About multitenancy this service could be replicated (both apis and database instances) for every provider (Pack or other companies) to avoid overloading one service with massive multimedia uploads
 (maybe a provider is migrating all it's content in a couple of days and overloads the traffic). Multitenancy can also be useful to segregate data for every provider/customer if needed or to sell the service as a "white label" product but at the same time it can became difficult to aggregate data between tenants for usage statistics.
 
 ## Handle heavy multimedia traffic
