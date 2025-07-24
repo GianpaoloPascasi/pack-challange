@@ -41,13 +41,13 @@ The schema and initial data is at [containers/init.sql](./containers/init.sql)
 
 ## Multitenantcy
 About multitenantcy this service could be replicated (both apis and database instances) for every provider (Pack or other companies) to avoid overloading one service with massive multimedia uploads
-(maybe a provider is migrating all it's content in a couple of days and overloads the traffic). Multitenantcy can also be useful to segregate data for every tenant if needed or to sell the service as a "white label" product but at the same time it can became difficult to aggregate data between tenants for usage statistics.
+(maybe a provider is migrating all it's content in a couple of days and overloads the traffic). Multitenancy can also be useful to segregate data for every provider/customer if needed or to sell the service as a "white label" product but at the same time it can became difficult to aggregate data between tenants for usage statistics.
 
 ## Handle heavy multimedia traffic
 ### What i did
 To handle heavy and frequent media uploads I used streams for uploading and for downloading I used S3 signed urls to reach objects directly from clients without proxying the download from the apis. 
 ### Other architectural improvements
-To avoid overloading the main api you could create one or more instances of a microservice that manages file uploads only and updates the files table record when the upload is complete. You can also use a Content Delivery Network (AWS Cloudfront or Cloudflare), a system that caches files (usally multimedia but also js, css and html) in edges near users locations to reduce latency.
+To avoid overloading the main api you could create one or more instances of a microservice that manages file uploads only and notifies the main api service to update table record when the upload is complete. You can also use a Content Delivery Network (AWS Cloudfront or Cloudflare), a system that caches files (usally multimedia but also js, css and html) in edges near users locations to reduce latency.
 
 ## Authentication/authorization
 ## In general
