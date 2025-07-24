@@ -5,9 +5,9 @@ NestJS (easier for boilerplate code, tests ecc), Postgres and Kysely.
 [http://PackWebLoadBala-fxdtratk-61030586.eu-central-1.elb.amazonaws.com](http://PackWebLoadBala-fxdtratk-61030586.eu-central-1.elb.amazonaws.com)
 
 # Running
-Make sure to create a .env and a .env.test.docker file with the following structure:
+Make sure to create a .env, a .env.test.local and a .env.test.docker file with the following structure:
 ```
-DATABASE_HOST=postgres -> this is the default docker host, feel free to adjust
+DATABASE_HOST=postgres -> this is the default docker host, use this in .env and .env.test.docker use localhost instead to launch tests without Docker
 DATABASE_PORT=5432
 DATABASE_USER=user
 DATABASE_PASSWORD=password
@@ -32,7 +32,7 @@ Feel free to run in your console `npm run test` for unit tests or `npm run test:
 If you have VSCode you should be able also to debug them using the Run and Debug section.
 
 ## Docker way
-I have setup a docker compose to launch both a postgres instance and the e2e tests. Check this [section](#if-you-want-to-test-from-your-command-prompt) and from the root launch in your console `docker-compose -f docker-compose-e2e.yml up`.
+I have setup a docker compose to launch both a postgres instance and the e2e tests. Check this [section](#running) and from the root launch in your console `docker-compose -f docker-compose-e2e.yml up`.
 
 # Schema
 The schema and initial data is at [containers/init.sql](./containers/init.sql)
