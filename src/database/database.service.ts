@@ -7,6 +7,7 @@ import { File } from "../files/interfaces/file.interface";
 import { Category } from "../files/interfaces/category.interface";
 import { Language } from "../files/interfaces/language.interface";
 import { User } from "../user/user.interface";
+import * as pg from "pg";
 
 interface DatabaseTables {
   files: File;
@@ -21,6 +22,10 @@ export class DatabaseService {
   private db: Kysely<DatabaseTables>;
 
   constructor() {
+    // force postgres to return actual int and not string at runtime
+    const int8TypeId = 20;
+    pg.types.setTypeParser(int8TypeId, (val) => parseInt(val, 10));
+
     const dialect = new PostgresDialect({
       pool: new Pool({
         database: process.env.DATABASE_NAME ?? Resource.PackPSQLDb.database,
@@ -32,10 +37,6 @@ export class DatabaseService {
       }),
     });
 
-    // Database interface is passed to Kysely's constructor, and from now on, Kysely
-    // knows your database structure.
-    // Dialect is passed to Kysely's constructor, and from now on, Kysely knows how
-    // to communicate with your database.
     this.db = new Kysely<DatabaseTables>({
       dialect,
     });
