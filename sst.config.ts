@@ -40,7 +40,7 @@ export default $config({
         link: [database, bucket],
         environment: {
           BCRYPT_ROUNDS: "12",
-          JWT_SECRET: "not-production-stuff-to-do-prefer-a-signin-certificate",
+          JWT_SECRET: "not-production-stuff-to-do-prefer-a-signing-certificate",
         },
       },
       {

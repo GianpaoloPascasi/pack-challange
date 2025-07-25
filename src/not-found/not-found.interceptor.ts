@@ -10,7 +10,7 @@ import { NoResultError } from "kysely";
 import { catchError, Observable, throwError } from "rxjs";
 
 @Injectable()
-export class SqlNotFoundInterceptorInterceptor implements NestInterceptor {
+export class NotFoundInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
       catchError((err: Error) =>

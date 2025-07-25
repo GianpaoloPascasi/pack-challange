@@ -12,10 +12,10 @@ import { AuthService } from "./auth.service";
 import { Request } from "express";
 import { AuthGuard } from "./auth.guard";
 import { User } from "../user/user.interface";
-import { SqlNotFoundInterceptorInterceptor } from "../sql-not-found-interceptor/sql-not-found-interceptor.interceptor";
+import { NotFoundInterceptor } from "../not-found/not-found.interceptor";
 
 @Controller("auth")
-@UseInterceptors(SqlNotFoundInterceptorInterceptor)
+@UseInterceptors(NotFoundInterceptor)
 export class AuthController {
   constructor(private authService: AuthService) {}
   @Post("login")

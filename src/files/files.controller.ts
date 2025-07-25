@@ -16,13 +16,13 @@ import { CreateFileDTO } from "./dto/create-file.dto";
 import { FilesService } from "./files.service";
 import { validateCreateFileDTO } from "./validators/file.validator";
 import { AuthGuard } from "../auth/auth.guard";
-import { SqlNotFoundInterceptorInterceptor } from "../sql-not-found-interceptor/sql-not-found-interceptor.interceptor";
+import { NotFoundInterceptor } from "../not-found/not-found.interceptor";
 import { Request } from "express";
 import { User } from "../user/user.interface";
 
 @Controller("files")
 @UseGuards(AuthGuard)
-@UseInterceptors(SqlNotFoundInterceptorInterceptor)
+@UseInterceptors(NotFoundInterceptor)
 export class FilesController {
   constructor(private filesService: FilesService) {}
 
